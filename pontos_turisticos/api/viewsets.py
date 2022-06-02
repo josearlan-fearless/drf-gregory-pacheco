@@ -7,6 +7,7 @@ from .serializers import PontoTuristicoSerializer
 
 class PontoTuristicoViewSet(ModelViewSet):
     serializer_class = PontoTuristicoSerializer
+    # http_method_names = ['DELETE', ]
 
     def get_queryset(self):
         return PontoTuristico.objects.filter(aprovado=True)
@@ -14,5 +15,8 @@ class PontoTuristicoViewSet(ModelViewSet):
     # def list(self, request, *args, **kwargs):
     #     return Response({"teste": 123})
 
-    def create(self, request, *args, **kwargs):
-        return Response({'Hello': request.data['nome']})
+    # def create(self, request, *args, **kwargs):
+    #     return Response({'Hello': request.data['nome']})
+
+    def destroy(self, request, *args, **kwargs):
+        pass
