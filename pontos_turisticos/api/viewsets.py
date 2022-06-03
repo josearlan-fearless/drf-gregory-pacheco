@@ -1,3 +1,4 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -8,6 +9,8 @@ from .serializers import PontoTuristicoSerializer
 
 class PontoTuristicoViewSet(ModelViewSet):
     serializer_class = PontoTuristicoSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_fields = ('nome', 'descricao', 'endereco')
 
     def get_queryset(self):
         id = self.request.query_params.get('id', None)
