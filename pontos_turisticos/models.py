@@ -23,6 +23,10 @@ class PontoTuristico(models.Model):
     def __str__(self):
         return self.nome
 
+    @property
+    def descricao_completa2(self):
+        return f'{self.nome} - {self.descricao}'
+
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
