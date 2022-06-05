@@ -2,6 +2,8 @@ from rest_framework.fields import SerializerMethodField
 from rest_framework.serializers import ModelSerializer
 
 from atracoes.models import Atracao
+from enderecos.models import Endereco
+
 from pontos_turisticos.models import PontoTuristico
 from atracoes.api.serializers import AtracaoSerializer
 from enderecos.api.serializers import EnderecoSerializer
@@ -10,7 +12,7 @@ from enderecos.api.serializers import EnderecoSerializer
 
 class PontoTuristicoSerializer(ModelSerializer):
     atracoes = AtracaoSerializer(many=True)
-    endereco = EnderecoSerializer(read_only=True)
+    endereco = EnderecoSerializer()
     descricao_completa = SerializerMethodField()
 
     class Meta:
@@ -29,8 +31,16 @@ class PontoTuristicoSerializer(ModelSerializer):
         # atracoes = validated_data.pop('atracoes')
         atracoes = validated_data['atracoes']
         del validated_data['atracoes']
+
+        endereco = validated_data['endereco']
+        del validated_data['endereco']
+
         ponto = PontoTuristico.objects.create(**validated_data)
         self.cria_atracoes(atracoes, ponto)
+
+        end = Endereco.objects.create(**endereco)
+        ponto.endereco = end
+        ponto.save()
         return ponto
 
     def get_descricao_completa(self, obj):
