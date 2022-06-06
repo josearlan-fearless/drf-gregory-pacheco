@@ -19,9 +19,9 @@ class DocIdentificacaoSerializer(ModelSerializer):
 
 class PontoTuristicoSerializer(ModelSerializer):
     atracoes = AtracaoSerializer(many=True)
-    endereco = EnderecoSerializer()
+    endereco = EnderecoSerializer(read_only=True)
     descricao_completa = SerializerMethodField()
-    doc_identificacao = DocIdentificacaoSerializer()
+    doc_identificacao = DocIdentificacaoSerializer(read_only=True)
 
     class Meta:
         model = PontoTuristico
@@ -36,24 +36,28 @@ class PontoTuristicoSerializer(ModelSerializer):
             ponto.atracoes.add(at)
 
     def create(self, validated_data):
-        # atracoes = validated_data.pop('atracoes')
-        atracoes = validated_data['atracoes']
-        del validated_data['atracoes']
-
-        endereco = validated_data['endereco']
-        del validated_data['endereco']
-
-        doc = validated_data.pop('doc_identificacao')
-        doci = DocIdentificacao.objects.create(**doc)
-
+        atracoes = validated_data.pop('atracoes')
         ponto = PontoTuristico.objects.create(**validated_data)
-        self.cria_atracoes(atracoes, ponto)
-
-        end = Endereco.objects.create(**endereco)
-        ponto.endereco = end
-        ponto.doc_identificacao = doci
-        ponto.save()
+        for atracao in atracoes:
+            ponto.atracoes.add(Atracao.objects.create(**atracao))
         return ponto
+        # atracoes = validated_data['atracoes']
+        # del validated_data['atracoes']
+        #
+        # endereco = validated_data['endereco']
+        # del validated_data['endereco']
+        #
+        # doc = validated_data.pop('doc_identificacao')
+        # doci = DocIdentificacao.objects.create(**doc)
+        #
+        # ponto = PontoTuristico.objects.create(**validated_data)
+        # self.cria_atracoes(atracoes, ponto)
+        #
+        # end = Endereco.objects.create(**endereco)
+        # ponto.endereco = end
+        # ponto.doc_identificacao = doci
+        # ponto.save()
+        # return ponto
 
     def get_descricao_completa(self, obj):
         return f'{obj.nome} - {obj.descricao}'
